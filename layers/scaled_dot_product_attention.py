@@ -17,7 +17,7 @@ class ScaledDotProductAttention(nn.Module):
 
         batch_size, head_number, length, key_dimension = key.size()
         # formula to calculate attention score
-        attention_score = query(key.transpose(2, 3) / math.sqrt(key_dimension))
+        attention_score: Tensor = (query @ (key.transpose(2, 3)) / math.sqrt(key_dimension))
 
         # handle mask
         if mask is not None:
