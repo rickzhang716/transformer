@@ -14,9 +14,7 @@ class LayerNormalization(nn.Module):
         self.beta = torch.ones(embedding_dimension)
         self.epsilon = epsilon
 
-    def forward(self, input_tensor: Tensor):
-        # input_tensor[batch_size, length, embedding_dimension]
-        # output[batch_size, length, embedding_dimension]
+    def forward(self, x: Tensor):
         '''
         by taking mean/variance, we reduce the dimensionality by 1, so these tensors are [batch_size,1,1].
         Thus, for each batch, we have a mean/variance of all x_i's.
@@ -27,9 +25,16 @@ class LayerNormalization(nn.Module):
         when we element-wise add/multiply to our tensor y [batch_size,length, embedding_dimension],
         we will be able to automatically expand gamma and beta to the correct size.
         This is also why we can keep epsilon as a single value.
+
+        In short, layer normalization allows us to "normalize" (more accurate term is "standardize")
+        the tensor before it is passed to the next layer, this way we reduce internal covariate shift.
         '''
-        mean = input_tensor.mean(dim=(1, 2), keepdim=True)
-        variance = input_tensor.var(dim=(1, 2), keepdim=True, correction=0)
-        y = (input_tensor - mean) / torch.sqrt(variance + self.epsilon)
+
+        # input_tensor[batch_size, length, embedding_dimension]
+        # output[batch_size, length, embedding_dimension]
+        mean = x.mean(dim=(1, 2), keepdim=True)
+        variance = x.var(dim=(1, 2), keepdim=True, correction=0)
+
+        y = (x - mean) / torch.sqrt(variance + self.epsilon)
         output = self.gamma * y + self.beta
         return output

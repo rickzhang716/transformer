@@ -30,31 +30,47 @@ class MultiHeadAttention(nn.Module):
                              embedding_dimension)  # output weight matrix
 
     def split_heads(self, tensor: Tensor):
-        # reshape input to have num_heads for multi-headed attention
-        # use a single tensor with another dimension (representing the head number)
-        # instead of making {num_heads} number of Modules, similar to grouped convolutions.
+        '''
+        reshape input to have num_heads for multi-headed attention
+        use a single tensor with another dimension (representing the head number)
+        instead of making {num_heads} number of Modules, similar to grouped convolutions.
 
-        # input: Tensor[batch_size, length, dimension]
-        # output: Tensor[batch_size, head_number, length, tensor_dimension]
-        #   note that tensor_dimension can be key_dimension or value_dimension,
-        #   depending on which matrix we are splitting.
+        note that tensor_dimension can be key_dimension or value_dimension,
+        depending on which matrix we are splitting.
+
+        :param tensor: Tensor[batch_size, length, dimension]
+        :return: Tensor[batch_size, head_number, length, tensor_dimension]
+        '''
 
         batch_size, length, dimension = tensor.size()
         return tensor.view(batch_size, length, self.num_heads, self.key_dimension).transpose(1, 2)
 
     def combine_heads(self, tensor: Tensor):
-        # combine heads back into original shape
-        # input: Tensor[batch_size, head_number, length, tensor_dimension]
-        #   we only ever combine attention matrices back together,
-        #   thus it will always be tensor_dimension = value_dimension
+        '''
+        combine heads back into original shape
 
-        # output: Tensor[batch_size, length, dimension]
+        we only ever combine attention matrices back together,
+        thus it will always be tensor_dimension = value_dimension
+
+        output:
+
+        :param tensor: Tensor[batch_size, head_number, length, tensor_dimension]
+        :return: Tensor[batch_size, length, dimension]
+        '''
 
         batch_size, num_heads, length, tensor_dimension = tensor.size()
         return tensor.transpose(1, 2).contiguous().view(batch_size, length,
                                                         num_heads * tensor_dimension)
 
     def forward(self, query: Tensor, key: Tensor, value: Tensor, mask: Optional[int] = None):
+        '''
+
+        :param query:
+        :param key:
+        :param value:
+        :param mask:
+        :return:
+        '''
         # multiply by weights
         query = self.W_q(query)
         key = self.W_k(key)
