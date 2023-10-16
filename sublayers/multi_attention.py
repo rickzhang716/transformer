@@ -62,7 +62,7 @@ class MultiHeadAttention(nn.Module):
         return tensor.transpose(1, 2).contiguous().view(batch_size, length,
                                                         num_heads * tensor_dimension)
 
-    def forward(self, query: Tensor, key: Tensor, value: Tensor, mask: Optional[int] = None):
+    def forward(self, query: Tensor, key: Tensor, value: Tensor, mask: Optional[Tensor] = None):
         '''
 
         :param query:

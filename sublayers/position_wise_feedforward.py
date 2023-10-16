@@ -3,7 +3,7 @@ from torch import Tensor
 
 
 class PositionWiseFeedForward(nn.Module):
-    def __init__(self, embedding_dimension: int, hidden_dimension: int, dropout_probability: float = 0.2):
+    def __init__(self, embedding_dimension: int, hidden_dimension: int, dropout_probability: float = 0.1):
         super().__init__()
         self.relu = nn.ReLU()
         self.dropout = nn.Dropout(p=dropout_probability)

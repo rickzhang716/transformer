@@ -5,7 +5,7 @@ from torch import Tensor
 
 
 class TransformerEmbedding(nn.Module):
-    def __init__(self, embedding_dimension: int, max_length: int, dropout_probability: int, vocab_size: int):
+    def __init__(self, vocab_size: int, embedding_dimension: int, max_length: int, dropout_probability: float = 0.1, ):
         '''
 
         :param embedding_dimension: length of embedding vectors
@@ -23,5 +23,3 @@ class TransformerEmbedding(nn.Module):
         position_encoding = self.positional_encoding(x)
         y = self.dropout(token_embedding + position_encoding)
         return y
-
-

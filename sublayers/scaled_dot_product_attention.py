@@ -11,7 +11,7 @@ class ScaledDotProductAttention(nn.Module):
         super().__init__()
         self.softmax = nn.Softmax(dim=3)
 
-    def forward(self, query: Tensor, key: Tensor, value: Tensor, mask: Optional[int] = None):
+    def forward(self, query: Tensor, key: Tensor, value: Tensor, mask: Optional[Tensor] = None):
         # input: Tensor[batch_size, head_number, length, key_dimension]
         # output: Tensor[batch_size, head_number, length, value_dimension]
 

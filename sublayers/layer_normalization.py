@@ -6,7 +6,7 @@ from torch import Tensor
 # see https://arxiv.org/pdf/1607.06450.pdf
 # and https://www.pinecone.io/learn/batch-layer-normalization/
 class LayerNormalization(nn.Module):
-    def __init__(self, embedding_dimension: int, epsilon: float = 1e-12):
+    def __init__(self, embedding_dimension: int, epsilon: float = 1e-5):
         super().__init__()
 
         self.embedding_dimension = embedding_dimension
