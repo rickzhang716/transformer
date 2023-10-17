@@ -27,7 +27,7 @@ class EncoderLayer(nn.Module):
     def forward(self, x: Tensor, input_mask: Tensor):
         '''
         :param x: Tensor[batch_size, head_number, length, tensor_dimension]
-        :param input_mask: mask for input
+        :param input_mask: mask for x
         :return:
         '''
         # multi-attention, add + norm

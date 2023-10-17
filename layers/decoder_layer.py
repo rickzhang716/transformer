@@ -15,6 +15,7 @@ class DecoderLayer(nn.Module):
                  # default epsilon chosen from https://pytorch.org/docs/stable/generated/torch.ao.nn.quantized.LayerNorm.html#layernorm
                  epsilon: float = 1e-5,
                  dropout_probability: float = 0.1):
+        super().__init__()
         self.self_attention = MultiHeadAttention(embedding_dimension, key_dimension, value_dimension, num_heads)
         self.dropout = nn.Dropout(dropout_probability)
         self.layer_norm = LayerNormalization(embedding_dimension, epsilon)
@@ -28,12 +29,12 @@ class DecoderLayer(nn.Module):
         self.dropout3 = nn.Dropout(dropout_probability)
         self.layer_norm3 = LayerNormalization(embedding_dimension, epsilon)
 
-    def forward(self, x: Tensor, encoder_output: Tensor, decoder_mask: Tensor, encoder_mask: Tensor, ):
+    def forward(self, x: Tensor, encoder_output: Tensor, encoder_mask: Tensor, decoder_mask: Tensor):
         '''
         :param x: Tensor[batch_size, head_number, length, tensor_dimension]
         :param encoder_output: Tensor[batch_size, head_number, length, tensor_dimension]
         :param encoder_mask: mask for encoder_output
-        :param decoder_mask: mask for decoder_input
+        :param decoder_mask: mask for x
         :return:
         '''
 
