@@ -2,6 +2,7 @@ from torch import nn
 from torch import Tensor
 from layers.decoder_layer import DecoderLayer
 from embedding.embedding import TransformerEmbedding
+from typing import Optional
 
 
 class Decoder(nn.Module):
@@ -25,17 +26,20 @@ class Decoder(nn.Module):
                                                           hidden_dimension,
                                                           epsilon,
                                                           dropout_probability) for _ in range(num_layers)])
-        # TODO: figure out how masking works
 
-    def forward(self, x: Tensor, encoder_output: Tensor, input_mask: Tensor):
+    def forward(self, x: Tensor, encoder_output: Tensor, input_mask: Tensor,
+                encoder_decoder_mask: Optional[Tensor] = None):
         '''
         :param x: Tensor[batch_size, head_number, length, tensor_dimension]
         :param encoder_output: output of the final encoder layer Tensor[batch_size, head_number, length, tensor_dimension]
-        :param input_mask: mask for x
+        :param input_mask: mask for x. We mask up to the position in the decoder, so that we do not allow for
+            positions to attend to "future" positions.
+        :param encoder_decoder_mask: mask for encoder_decoder attention.
+
         :return:
         '''
         x = self.embedding(x)
         for decoder_layer in self.decoder_layers:
-            x = decoder_layer(x, encoder_output, input_mask)
+            x = decoder_layer(x, encoder_output, encoder_decoder_mask, input_mask)
 
         return x

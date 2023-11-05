@@ -3,6 +3,7 @@ from torch import Tensor
 from sublayers.layer_normalization import LayerNormalization
 from sublayers.multi_attention import MultiHeadAttention
 from sublayers.position_wise_feedforward import PositionWiseFeedForward
+from typing import Optional
 
 
 class DecoderLayer(nn.Module):
@@ -29,12 +30,13 @@ class DecoderLayer(nn.Module):
         self.dropout3 = nn.Dropout(dropout_probability)
         self.layer_norm3 = LayerNormalization(embedding_dimension, epsilon)
 
-    def forward(self, x: Tensor, encoder_output: Tensor, encoder_mask: Tensor, decoder_mask: Tensor):
+    def forward(self, x: Tensor, encoder_output: Tensor, encoder_decoder_mask: Tensor,
+                input_mask: Optional[Tensor] = None):
         '''
         :param x: Tensor[batch_size, head_number, length, tensor_dimension]
         :param encoder_output: Tensor[batch_size, head_number, length, tensor_dimension]
-        :param encoder_mask: mask for encoder_output
-        :param decoder_mask: mask for x
+        :param encoder_decoder_mask: mask for encoder_output
+        :param input_mask: mask for x
         :return:
         '''
 
@@ -42,7 +44,7 @@ class DecoderLayer(nn.Module):
         sublayer_output = self.dropout(self.self_attention(query=x,
                                                            key=encoder_output,
                                                            value=encoder_output,
-                                                           mask=decoder_mask
+                                                           mask=input_mask
                                                            ))
         y = self.layer_norm(x + sublayer_output)
 
@@ -50,7 +52,7 @@ class DecoderLayer(nn.Module):
         sublayer_output = self.dropout2(self.encoder_decoder_attention(query=y,
                                                                        key=y,
                                                                        value=y,
-                                                                       mask=encoder_mask
+                                                                       mask=encoder_decoder_mask
                                                                        ))
         y2 = self.layer_norm(y + sublayer_output)
 
