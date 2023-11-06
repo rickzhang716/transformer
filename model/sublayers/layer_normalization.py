@@ -9,7 +9,6 @@ class LayerNormalization(nn.Module):
     def __init__(self, embedding_dimension: int, epsilon: float = 1e-5):
         super().__init__()
 
-        self.embedding_dimension = embedding_dimension
         self.gamma = torch.zeros(embedding_dimension)
         self.beta = torch.ones(embedding_dimension)
         self.epsilon = epsilon

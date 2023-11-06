@@ -1,8 +1,8 @@
 from torch import nn
 from torch import Tensor
-from sublayers.layer_normalization import LayerNormalization
-from sublayers.multi_attention import MultiHeadAttention
-from sublayers.position_wise_feedforward import PositionWiseFeedForward
+from model.sublayers.layer_normalization import LayerNormalization
+from model.sublayers.multi_attention import MultiHeadAttention
+from model.sublayers.position_wise_feedforward import PositionWiseFeedForward
 
 
 class EncoderLayer(nn.Module):
@@ -15,6 +15,8 @@ class EncoderLayer(nn.Module):
                  epsilon: float = 1e-5,
                  # default epsilon chosen from https://pytorch.org/docs/stable/generated/torch.ao.nn.quantized.LayerNorm.html#layernorm
                  dropout_probability: float = 0.1):
+        super().__init__()
+
         self.self_attention = MultiHeadAttention(embedding_dimension, key_dimension, value_dimension, num_heads)
         self.dropout = nn.Dropout(dropout_probability)
 
@@ -35,6 +37,6 @@ class EncoderLayer(nn.Module):
         y = self.layer_norm(x + sublayer_output)
 
         # feedforward, add + norm
-        sublayer_output = self.dropout2(self.feedforward(y))
-        output = self.layer_norm2(y + sublayer_output)
+        sublayer_output2 = self.dropout2(self.feedforward(y))
+        output = self.layer_norm2(y + sublayer_output2)
         return output

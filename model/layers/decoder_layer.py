@@ -1,8 +1,8 @@
 from torch import nn
 from torch import Tensor
-from sublayers.layer_normalization import LayerNormalization
-from sublayers.multi_attention import MultiHeadAttention
-from sublayers.position_wise_feedforward import PositionWiseFeedForward
+from model.sublayers.layer_normalization import LayerNormalization
+from model.sublayers.multi_attention import MultiHeadAttention
+from model.sublayers.position_wise_feedforward import PositionWiseFeedForward
 from typing import Optional
 
 

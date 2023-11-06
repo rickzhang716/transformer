@@ -1,5 +1,5 @@
-from positional_encoding import PositionalEncoding
-from token_embedding import TokenEmbedding
+from .positional_encoding import PositionalEncoding
+from .token_embedding import TokenEmbedding
 from torch import nn
 from torch import Tensor
 
@@ -20,6 +20,9 @@ class TransformerEmbedding(nn.Module):
 
     def forward(self, x: Tensor):
         token_embedding = self.token_embedding(x)
-        position_encoding = self.positional_encoding(x)
+        position_encoding = self.positional_encoding(token_embedding)
+        print(x.size())
+        print(token_embedding.size())
+        print(position_encoding.size())
         y = self.dropout(token_embedding + position_encoding)
         return y

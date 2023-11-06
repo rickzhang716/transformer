@@ -1,7 +1,7 @@
 from torch import nn
 from torch import Tensor
-from layers.encoder_layer import EncoderLayer
-from embedding.embedding import TransformerEmbedding
+from .layers.encoder_layer import EncoderLayer
+from .embedding.embedding import TransformerEmbedding
 
 
 class Encoder(nn.Module):
@@ -16,6 +16,7 @@ class Encoder(nn.Module):
                  hidden_dimension: int,
                  epsilon: float = 1e-5,
                  dropout_probability: float = 0.1):
+        super().__init__()
         self.embedding = TransformerEmbedding(vocab_size, embedding_dimension, max_length, dropout_probability)
         self.encoder_layers = nn.ModuleList([EncoderLayer(embedding_dimension,
                                                           key_dimension,

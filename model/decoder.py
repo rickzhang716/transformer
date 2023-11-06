@@ -1,7 +1,7 @@
 from torch import nn
 from torch import Tensor
-from layers.decoder_layer import DecoderLayer
-from embedding.embedding import TransformerEmbedding
+from .layers.decoder_layer import DecoderLayer
+from .embedding.embedding import TransformerEmbedding
 from typing import Optional
 
 

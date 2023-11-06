@@ -13,7 +13,9 @@ class PositionalEncoding(nn.Module):
         self.embedding_dimension = embedding_dimension
         self.max_length = max_length
         self.positional_encoding = torch.zeros(max_length, embedding_dimension)
-        position = torch.arange(0, max_length)
+        self.positional_encoding.requires_grad = False
+
+        position = torch.arange(0, max_length).unsqueeze(1)
         _2i = torch.arange(0, embedding_dimension, step=2)
         self.positional_encoding[:, 0::2] = torch.sin(position / (10000 ** (_2i / embedding_dimension)))
         self.positional_encoding[:, 1::2] = torch.cos(position / (10000 ** (_2i / embedding_dimension)))
@@ -24,5 +26,11 @@ class PositionalEncoding(nn.Module):
         :param tensor: Tensor[batch_size,length,tensor_dimension]
         :return: tensor of positional embeddings Tensor[length,tensor_dimension]
         '''
+        #TODO: figure this tensor sizing out
         batch_size, length, tensor_dimension = tensor.size()
-        return self.positional_encoding[0:length, :]
+        print(f'length {length}')
+        output = self.positional_encoding[:, 0:length]
+
+        return output
+
+

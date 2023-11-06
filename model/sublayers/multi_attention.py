@@ -4,7 +4,7 @@ import math
 from torch import Tensor
 import typing
 from typing import Optional
-from scaled_dot_product_attention import ScaledDotProductAttention
+from .scaled_dot_product_attention import ScaledDotProductAttention
 
 
 class MultiHeadAttention(nn.Module):
