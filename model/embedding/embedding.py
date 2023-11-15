@@ -21,8 +21,5 @@ class TransformerEmbedding(nn.Module):
     def forward(self, x: Tensor):
         token_embedding = self.token_embedding(x)
         position_encoding = self.positional_encoding(token_embedding)
-        print(x.size())
-        print(token_embedding.size())
-        print(position_encoding.size())
         y = self.dropout(token_embedding + position_encoding)
         return y

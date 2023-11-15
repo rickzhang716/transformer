@@ -40,5 +40,6 @@ class LabelSmoothing(nn.Module):
 
 
 def no_peek_mask(size: int):
-    return torch.tril(torch.ones(size, size))
+    mask = torch.tril(torch.ones(size, size,dtype=torch.bool)).unsqueeze(0)
+    return mask
 

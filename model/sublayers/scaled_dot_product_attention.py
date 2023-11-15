@@ -9,7 +9,7 @@ import math
 class ScaledDotProductAttention(nn.Module):
     def __init__(self):
         super().__init__()
-        self.softmax = nn.Softmax(dim=3)
+        self.softmax = nn.Softmax(dim=-1)
 
     def forward(self, query: Tensor, key: Tensor, value: Tensor, mask: Optional[Tensor] = None):
         # input: Tensor[batch_size, head_number, length, key_dimension]
@@ -17,7 +17,7 @@ class ScaledDotProductAttention(nn.Module):
 
         batch_size, head_number, length, key_dimension = key.size()
         # formula to calculate attention score
-        attention_score: Tensor = (query @ (key.transpose(2, 3)) / math.sqrt(key_dimension))
+        attention_score: Tensor = (query @ (key.transpose(-2, -1))) / math.sqrt(key_dimension)
 
         # handle mask
         if mask is not None:
@@ -26,5 +26,5 @@ class ScaledDotProductAttention(nn.Module):
         # get weighted sum attention vectors, weighted with respect to attention scores
         # softmax to normalize, sum = 1
         attention_probability = self.softmax(attention_score)
-        output = attention_probability(value)
+        output = attention_probability @ value
         return output

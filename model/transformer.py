@@ -1,9 +1,22 @@
 import torch
+import copy
 from torch import nn
 from torch import Tensor
+from torch.nn.functional import log_softmax
 from .encoder import Encoder
 from .decoder import Decoder
-from typing import Optional
+
+c = copy.deepcopy
+
+
+class TransformerFinalLayer(nn.Module):
+    def __init__(self, embedding_dimension: int, decoder_vocab_size: int):
+        super().__init__()
+        self.linear = nn.Linear(embedding_dimension, decoder_vocab_size)
+        self.softmax = nn.Softmax(dim=-1)
+
+    def forward(self, src: Tensor):
+        return log_softmax(self.linear(src), dim=-1)
 
 
 class Transformer(nn.Module):
@@ -43,16 +56,17 @@ class Transformer(nn.Module):
         self.embedding_dimension = embedding_dimension
         self.encoder = Encoder(num_layers, encoder_vocab_size, embedding_dimension, key_dimension, value_dimension,
                                encoder_max_length, num_heads, hidden_dimension, epsilon, dropout_probability)
+
         self.decoder = Decoder(num_layers, decoder_vocab_size, embedding_dimension, key_dimension, value_dimension,
                                decoder_max_length, num_heads, hidden_dimension, epsilon, dropout_probability)
-        self.final_linear = nn.Linear(embedding_dimension, decoder_vocab_size)
-        self.final_softmax = nn.Softmax(dim=-1)
+        self.final_layer = TransformerFinalLayer(embedding_dimension, decoder_vocab_size)
 
     def forward(self, src: Tensor, tgt: Tensor, src_mask: Tensor, tgt_mask: Tensor):
-
-        encoder_output = self.encoder(src, src_mask)
-        output = self.decoder(tgt, encoder_output, tgt_mask, src_mask)
-        output = self.final_linear(output)
-        output = self.final_softmax(output)
+        output = self.encode_decode(src, tgt, src_mask, tgt_mask)
+        output = self.final_layer(output)
         return output
 
+    def encode_decode(self, src: Tensor, tgt: Tensor, src_mask: Tensor, tgt_mask: Tensor):
+        encoder_output = self.encoder(src, src_mask)
+        output = self.decoder(tgt, encoder_output, tgt_mask, src_mask)
+        return output

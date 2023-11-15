@@ -10,6 +10,7 @@ class Batch:
         if tgt is not None:
             self.tgt: Tensor = tgt[:, :-1]
             self.tgt_y: Tensor = tgt[:, 1:]
+            # print(self.tgt_y)
             self.tgt_mask: Tensor = self.make_decoder_input_mask(self.tgt, padding_index)
             self.num_tokens: int = (self.tgt_y != padding_index).data.sum()
 
