@@ -1,7 +1,6 @@
 import spacy
 import os
 
-import torch
 import torchtext.datasets as datasets
 from torchtext.vocab import build_vocab_from_iterator
 from copy import deepcopy as c
