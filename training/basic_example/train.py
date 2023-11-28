@@ -1,8 +1,8 @@
 import torch
 from torch import nn
 from torch.optim.lr_scheduler import LambdaLR
-from training.utils import LabelSmoothing, rate, no_peek_mask
-from training.train import run_epoch, run_epoch2
+from training.util.utils import LabelSmoothing, rate, SimpleLossCompute, greedy_decode
+from training.train import run_epoch
 from .data import data_gen
 from .dummy import DummyOptimizer, DummyScheduler
 from model.transformer import Transformer
@@ -56,37 +56,4 @@ def example_simple_model():
     print(guess)
 
 
-class SimpleLossCompute:
-    #  A simple loss compute and train function.
-
-    def __init__(self, generator, criterion):
-        self.generator = generator
-        self.criterion = criterion
-
-    def __call__(self, x, y, norm):
-
-        x = self.generator(x)
-        sloss = (
-            self.criterion(
-                x.contiguous().view(-1, x.size(-1)), y.contiguous().view(-1)
-            )
-            / norm
-        )
-        return sloss.data * norm, sloss
-
-
-def greedy_decode(model, src, src_mask, max_len, start_symbol):
-    memory = model.encoder(src, src_mask)
-    ys = torch.zeros(1, 1).fill_(start_symbol).type_as(src.data)
-    for i in range(max_len - 1):
-        out = model.decoder(
-            ys, memory, no_peek_mask(ys.size(1)).type_as(src.data), src_mask
-        )
-        prob = model.final_layer(out[:, -1])
-        _, next_word = torch.max(prob, dim=1)
-        next_word = next_word.data[0]
-        ys = torch.cat(
-            [ys, torch.zeros(1, 1).type_as(src.data).fill_(next_word)], dim=1
-        )
-    return ys
 

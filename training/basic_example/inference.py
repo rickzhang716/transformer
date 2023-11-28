@@ -1,6 +1,6 @@
 import torch
 from model.transformer import Transformer
-from training.utils import no_peek_mask
+from training.util.utils import no_peek_mask
 
 
 def inference_test():

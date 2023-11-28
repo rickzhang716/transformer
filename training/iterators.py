@@ -11,11 +11,12 @@ def collate_fn(
         max_padding=128,  # this is max length of sentence
         pad_id=2
 ):
-    sentence_begin_id = torch.Tensor([0], device=device)
-    sentence_end_id = torch.Tensor([1], device=device)
-
+    sentence_begin_id = torch.Tensor([0], device=device).int()
+    sentence_end_id = torch.Tensor([1], device=device).int()
     src_list, tgt_list = [], []
-    for (src, tgt) in batch:
+    for src_tgt_pair in batch:
+        src = src_tgt_pair['de']
+        tgt = src_tgt_pair['en']
         processed_src = torch.cat(
             [
                 sentence_begin_id,
@@ -56,6 +57,6 @@ def collate_fn(
                 value=pad_id
             )
         )
-    src = torch.stack(src_list)
-    tgt = torch.stack(tgt_list)
+    src = torch.stack(src_list).int()
+    tgt = torch.stack(tgt_list).int()
     return src, tgt
