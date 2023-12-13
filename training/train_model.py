@@ -3,7 +3,6 @@ import torch.multiprocessing as mp
 import os
 from .basic_example.dummy import DummyOptimizer, DummyScheduler
 from .batch import Batch
-from .config import config
 from model.transformer import Transformer
 from .data_loader import create_dataloaders
 from .train import run_epoch, TrainingState
@@ -11,6 +10,12 @@ from training.util.utils import LabelSmoothing, rate, SimpleLossCompute
 from training.util.tokenizer import build_vocabulary, load_tokenizers
 from torch.optim.lr_scheduler import LambdaLR
 from .worker import train_worker
+
+
+class InvalidModelNameException(Exception):
+    def __init__(self,message="model name already taken!!"):
+        super().__init__(message)
+
 
 def train_distributed_model(
     vocab_src,
@@ -32,16 +37,17 @@ def train_distributed_model(
 
 
 def train_model(config):
-    spacy_german, spacy_english = load_tokenizers()
-    vocab_src, vocab_tgt = build_vocabulary(spacy_german, spacy_english)
+    if os.path.isfile(f"{config['file_name']}final.pt"):
+        raise InvalidModelNameException()
     if config["distributed"]:
+        spacy_german, spacy_english = load_tokenizers()
+        vocab_src, vocab_tgt = build_vocabulary(spacy_german, spacy_english)
         train_distributed_model(
             vocab_src, vocab_tgt, spacy_german, spacy_english, config
         )
     else:
-        train_single_model("cpu",config)
-
-
+        print("training non distributed model...")
+        train_single_model("cpu", config)
 
 
 def train_single_model(gpu, config):
@@ -50,11 +56,14 @@ def train_single_model(gpu, config):
     pad_idx = vocab_tgt["<blank>"]
     model_dimension = config["model_dimension"]
     distributed = config["distributed"]
+    print("src_vocab_size:", len(vocab_src))
     model = Transformer(
         len(vocab_src),
         len(vocab_tgt),
         num_layers=6
     )
+    model.name = config["file_name"]
+
     criterion = LabelSmoothing(
         size=len(vocab_tgt), padding_idx=pad_idx, smoothing=0.1
     )
