@@ -4,7 +4,7 @@ import math
 from torch import Tensor
 import typing
 from typing import Optional
-from scaled_dot_product_attention import ScaledDotProductAttention
+from .scaled_dot_product_attention import ScaledDotProductAttention
 
 
 class MultiHeadAttention(nn.Module):
@@ -81,6 +81,8 @@ class MultiHeadAttention(nn.Module):
         key = self.split_heads(key)
         value = self.split_heads(value)
 
+        if mask is not None:
+            mask = mask.unsqueeze(1)
         # get attention matrix
         attention_matrix = self.scaled_dot_product_attention(
             query, key, value, mask)
