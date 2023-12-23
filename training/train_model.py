@@ -10,6 +10,7 @@ from training.util.utils import LabelSmoothing, rate, SimpleLossCompute
 from training.util.tokenizer import build_vocabulary, load_tokenizers
 from torch.optim.lr_scheduler import LambdaLR
 from .worker import train_worker
+from training.sample import make_model
 
 
 class InvalidModelNameException(Exception):
@@ -57,10 +58,9 @@ def train_single_model(gpu, config):
     model_dimension = config["model_dimension"]
     distributed = config["distributed"]
     print("src_vocab_size:", len(vocab_src))
-    model = Transformer(
+    model = make_model(
         len(vocab_src),
         len(vocab_tgt),
-        num_layers=6
     )
     model.name = config["file_name"]
 
