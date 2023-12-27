@@ -61,6 +61,12 @@ class Transformer(nn.Module):
                                decoder_max_length, num_heads, hidden_dimension, epsilon, dropout_probability)
         self.final_layer = TransformerFinalLayer(embedding_dimension, decoder_vocab_size)
 
+    def encode(self, src: Tensor, src_mask: Tensor):
+        return self.encoder(src, src_mask)
+
+    def decode(self, tgt: Tensor, encoder_output: Tensor, tgt_mask: Tensor, src_mask):
+        return self.decoder(tgt, encoder_output, tgt_mask, src_mask)
+
     def forward(self, src: Tensor, tgt: Tensor, src_mask: Tensor, tgt_mask: Tensor):
         output = self.encode_decode(src, tgt, src_mask, tgt_mask)
         output = self.final_layer(output)
@@ -70,3 +76,38 @@ class Transformer(nn.Module):
         encoder_output = self.encoder(src, src_mask)
         output = self.decoder(tgt, encoder_output, tgt_mask, src_mask)
         return output
+
+
+def make_transformer_model(encoder_vocab_size: int,
+                 decoder_vocab_size: int,
+
+                 embedding_dimension: int = 512,
+                 key_dimension: int = 64,
+                 value_dimension: int = 64,
+                 num_layers: int = 6,
+                 num_heads: int = 8,
+
+                 encoder_max_length: int = 256,
+                 decoder_max_length: int = 256,
+                 hidden_dimension: int = 2048,
+
+                 epsilon: float = 1e-5,
+                 dropout_probability: float = 0.1
+                 ) -> Transformer:
+    model = Transformer(encoder_vocab_size,
+                        decoder_vocab_size,
+                        embedding_dimension,
+                        key_dimension,
+                        value_dimension,
+                        num_layers,
+                        num_heads,
+                        encoder_max_length,
+                        decoder_max_length,
+                        hidden_dimension,
+                        epsilon,
+                        dropout_probability)
+    for param in model.parameters():
+        if param.dim() > 1:
+            nn.init.xavier_uniform_(param)
+
+    return model
