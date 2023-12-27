@@ -31,8 +31,8 @@ class LayerNormalization(nn.Module):
 
         # input_tensor[batch_size, length, embedding_dimension]
         # output[batch_size, length, embedding_dimension]
-        mean = x.mean(dim=(1, 2), keepdim=True)
-        variance = x.var(dim=(1, 2), keepdim=True, correction=0)
+        mean = x.mean(dim=2, keepdim=True)
+        variance = x.var(dim=2, keepdim=True, correction=0)
 
         y = (x - mean) / torch.sqrt(variance + self.epsilon)
         output = self.gamma * y + self.beta
