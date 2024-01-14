@@ -650,22 +650,22 @@ class PositionalEncoding(nn.Module):
 # > Here we define a function from hyperparameters to a full model.
 
 # %% id="mPe1ES0UTsqI"
-def make_model(
-    src_vocab, tgt_vocab, N=6, d_model=512, d_ff=2048, h=8, dropout=0.1
+def make_sample_model(
+    src_vocab, tgt_vocab, num_layers=6, embedding_dimension=512, d_ff=2048, h=8, dropout=0.1
 ):
     "Helper: Construct a model from hyperparameters."
     c = copy.deepcopy
-    attn = MultiHeadedAttention(h, d_model)
-    ff = PositionwiseFeedForward(d_model, d_ff, dropout)
-    position = PositionalEncoding(d_model, dropout)
+    attn = MultiHeadedAttention(h, embedding_dimension)
+    ff = PositionwiseFeedForward(embedding_dimension, d_ff, dropout)
+    position = PositionalEncoding(embedding_dimension, dropout)
     model = EncoderDecoder(
-        Encoder(EncoderLayer(d_model, c(attn), c(ff), dropout), N),
-        Decoder(DecoderLayer(d_model, c(attn), c(attn), c(ff), dropout), N),
-        nn.Sequential(Embeddings(d_model, src_vocab), c(position)),
-        nn.Sequential(Embeddings(d_model, tgt_vocab), c(position)),
-        Generator(d_model, tgt_vocab),
+        Encoder(EncoderLayer(embedding_dimension, c(attn), c(ff), dropout), num_layers),
+        Decoder(DecoderLayer(embedding_dimension, c(attn), c(attn), c(ff), dropout), num_layers),
+        nn.Sequential(Embeddings(embedding_dimension, src_vocab), c(position)),
+        nn.Sequential(Embeddings(embedding_dimension, tgt_vocab), c(position)),
+        Generator(embedding_dimension, tgt_vocab),
     )
-
+    model.embedding_dimension = embedding_dimension
     # This was important from their code.
     # Initialize parameters with Glorot / fan_avg.
     for p in model.parameters():

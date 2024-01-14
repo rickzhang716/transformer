@@ -5,13 +5,14 @@ from training.util.utils import LabelSmoothing, rate, SimpleLossCompute, greedy_
 from training.train import run_epoch
 from .data import data_gen
 from .dummy import DummyOptimizer, DummyScheduler
-from model.transformer import Transformer
+from model.transformer import make_transformer_model
+from training.sample import make_sample_model
 
 
 def example_simple_model():
     vocab_size = 11
     criterion = LabelSmoothing(size=vocab_size, padding_idx=0, smoothing=0.0)
-    model = Transformer(vocab_size, vocab_size, num_layers=2)
+    model = make_transformer_model(vocab_size, vocab_size, num_layers=2)
     for p in model.parameters():
         if p.dim() > 1:
             nn.init.xavier_uniform_(p)
@@ -19,7 +20,6 @@ def example_simple_model():
     optimizer = torch.optim.Adam(
         model.parameters(), lr=0.5, betas=(0.9, 0.98), eps=1e-9
     )
-    print(model.embedding_dimension)
     lr_scheduler = LambdaLR(
         optimizer=optimizer,
         lr_lambda=lambda step: rate(

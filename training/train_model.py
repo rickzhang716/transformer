@@ -3,14 +3,14 @@ import torch.multiprocessing as mp
 import os
 from .basic_example.dummy import DummyOptimizer, DummyScheduler
 from .batch import Batch
-from model.transformer import Transformer
+from model.transformer import make_transformer_model
 from .data_loader import create_dataloaders
 from .train import run_epoch, TrainingState
 from training.util.utils import LabelSmoothing, rate, SimpleLossCompute
 from training.util.tokenizer import build_vocabulary, load_tokenizers
 from torch.optim.lr_scheduler import LambdaLR
 from .worker import train_worker
-from training.sample import make_model
+from training.sample import make_sample_model
 
 
 class InvalidModelNameException(Exception):
@@ -58,7 +58,7 @@ def train_single_model(gpu, config):
     model_dimension = config["model_dimension"]
     distributed = config["distributed"]
     print("src_vocab_size:", len(vocab_src))
-    model = make_model(
+    model = make_transformer_model(
         len(vocab_src),
         len(vocab_tgt),
     )

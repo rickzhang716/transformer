@@ -35,7 +35,7 @@ def create_dataloaders(
 
     dataset = load_from_disk("multi30k")
 
-    training_iterable = dataset['train']
+    training_iterable = dataset['train'][:200]
     validation_iterable = dataset['validation']
     testing_iterable = dataset['test']
 
@@ -45,7 +45,7 @@ def create_dataloaders(
     # validation_iterable_map = to_map_style_dataset(validation_iterable)
     # validation_sampler = DistributedSampler(validation_iterable_map) if distributed else None
     training_dataloader = DataLoader(
-        training_iterable,
+        dataset_to_torch_dataset(training_iterable),
         batch_size=batch_size,
         shuffle=True,
         collate_fn=collate_fn

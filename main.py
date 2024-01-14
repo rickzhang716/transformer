@@ -20,6 +20,8 @@ match args.command:
         example_simple_model()
     case "test":
         run_example(1000)
+    case "sample":
+        sample()
 
 
 
