@@ -8,7 +8,7 @@ config = {
     "max_padding": 72,
     "model_dimension": 512,
     "warmup": 3000,
-    "file_name": "multi30k_model_"
+    "file_name": "trained_models/multi30k_model_"
 }
 
 

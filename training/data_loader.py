@@ -2,7 +2,7 @@ from training.util.tokenizer import tokenize
 from .iterators import collate_fn as collate
 from training.util.utils import dataset_to_torch_dataset
 from torch.utils.data import DataLoader
-from datasets import load_dataset
+from datasets import load_dataset, load_from_disk
 
 
 def create_dataloaders(
@@ -33,7 +33,7 @@ def create_dataloaders(
             pad_id=vocab_src.get_stoi()["<blank>"]
         )
 
-    dataset = load_dataset("bentrevett/multi30k")
+    dataset = load_from_disk("multi30k")
 
     training_iterable = dataset['train']
     validation_iterable = dataset['validation']
